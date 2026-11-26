@@ -8,7 +8,7 @@ import { logout as endSession } from "../../services/auth";
 const ICONS = {
   dashboard: "🏠", reserve: "🏟️", complaint: "📝", notifications: "🔔", history: "📑",
   accounts: "👥", reservations: "📅", complaints: "📢", reports: "📋", notify: "📣",
-  analytics: "📊", dispatches: "🚨", incident: "🆘",
+  analytics: "📊", dispatches: "🚨", incident: "🆘", pickups: "📦",
 };
 
 // Sidebar dashboard shared by the resident, admin and tanod portals.
