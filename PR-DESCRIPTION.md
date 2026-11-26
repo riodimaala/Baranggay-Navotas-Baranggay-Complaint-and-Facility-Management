@@ -1,25 +1,21 @@
-# 1.2.1 Schedule facility pick-up and update pick-up status
+# 2.1.2 Evaluate complaints (dispatch a tanod, resolve, or reject)
 
-**Requires PR 1.1.2 to be merged first.**
+**Requires PR 1.1.2 to be merged first.** It does not depend on the pick-up PR, so the two can be merged in any order.
 
 ## What changed
-**Admin (Reservations page)**
-- Approved reservation: **Schedule pick-up** opens a pop-up for the pick-up date and time. Errors from the backend (for example a past date) are shown inside the pop-up.
-- Scheduled reservation: **Mark picked up** updates the status.
-- The resident is notified automatically when a pick-up is scheduled (done by the backend).
-- `services/adminReservations.js`: `scheduleReservation`, `markPickedUp`.
-
-**Resident**
-- New page **Pick-up** (`/resident/pickups`) with a sidebar link: shows the resident's own reservations, the pick-up date and time, and the current status, plus a reminder box for scheduled pick-ups.
-- `services/residentReservations.js`: loads `/reservations/mine`.
-- `App.jsx`, `ResidentPortal.jsx`, `PortalLayout.jsx`: route, link and icon for the new page.
+- `services/adminComplaints.js`: list complaints, list tanods, load the photo proof, dispatch, resolve, reject.
+- `AdminPortal.jsx`: complaints and the tanod list now come from the database.
+- `Complaints.jsx`: **Evaluate** opens a pop-up with the resident's details and photo proof (downloaded with the login token). The admin can:
+  - **Dispatch tanod**: pick a tanod (off-duty ones are marked). The tanod and the resident are notified by the backend.
+  - **Resolve without tanod**
+  - **Reject** with a reason (the resident is notified)
+- If someone else already handled the complaint, a clear message shows and the table refreshes. A message shows if the backend is down.
+- `database/sample_complaints.sql`: 3 pending complaints for testing only.
 
 ## How to test
-1. Follow the setup steps in PR 1.1.2 and approve a reservation as Admin.
-2. Admin > Reservations > **Schedule pick-up**, choose a date and time, save. The row becomes **Scheduled**.
-3. Click **Mark picked up**. The row becomes **Picked up**.
-4. Log in as Resident `juan@email.com` / `Resident@123` > **Pick-up** to see the schedule and status.
-5. phpMyAdmin: `reservations.status` and `scheduled_at` changed.
+1. Follow the setup steps in PR 1.1.2, then import `sample_complaints.sql`.
+2. Log in as Admin > **Complaints** > **Evaluate** on each complaint and try dispatch, resolve and reject.
+3. phpMyAdmin: `complaints.status`, `tanod_id` and `reject_reason` changed, and `notifications` has new rows for the resident and the tanod.
 
 ## Not part of this PR
-Return scheduling and marking as returned (1.2.2). A "Picked up" reservation has no admin buttons until that task.
+The resident complaint form (2.1.1) and the tanod portal are still sample data. The photo proof appears for complaints filed through the API with a photo.
