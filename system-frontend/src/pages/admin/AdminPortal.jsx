@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import PortalLayout from "../../components/portal/PortalLayout";
-import {
-  INITIAL_ACCOUNTS, INITIAL_COMPLAINTS, INITIAL_REPORTS, INITIAL_NOTICES, TANODS,
-} from "../../data/adminData";
+import { INITIAL_ACCOUNTS, INITIAL_REPORTS, INITIAL_NOTICES } from "../../data/adminData";
 import { listReservations } from "../../services/adminReservations";
+import { listComplaints, listTanods } from "../../services/adminComplaints";
 
 // change one item (found by its ref) in a list
 const patch = (setter) => (ref, changes) =>
   setter((list) => list.map((x) => (x.ref === ref ? { ...x, ...changes } : x)));
 
 // Holds all admin data and shares it with the admin pages.
-// Reservations come from the backend. The other lists are still sample data until they are connected.
+// Reservations, complaints and the tanod list come from the backend. The other lists are still sample data until they are connected.
 export default function AdminPortal() {
   const [accs, setAccs] = useState(INITIAL_ACCOUNTS);
   const [rsv, setRsv] = useState([]);
   const [rsvError, setRsvError] = useState("");
-  const [cmp, setCmp] = useState(INITIAL_COMPLAINTS);
+  const [cmp, setCmp] = useState([]);
+  const [cmpError, setCmpError] = useState("");
+  const [tanods, setTanods] = useState([]);
   const [rep, setRep] = useState(INITIAL_REPORTS);
   const [notices, setNotices] = useState(INITIAL_NOTICES);
 
@@ -29,12 +30,28 @@ export default function AdminPortal() {
     }
   }, []);
 
+  // same for the complaints
+  const reloadCmp = useCallback(async () => {
+    try {
+      setCmp(await listComplaints());
+      setCmpError("");
+    } catch (e) {
+      setCmpError(e.message);
+    }
+  }, []);
+
   // first load, when the admin portal opens
   useEffect(() => {
     let alive = true;
     listReservations()
       .then((rows) => alive && setRsv(rows))
       .catch((e) => alive && setRsvError(e.message));
+    listComplaints()
+      .then((rows) => alive && setCmp(rows))
+      .catch((e) => alive && setCmpError(e.message));
+    listTanods()
+      .then((rows) => alive && setTanods(rows))
+      .catch(() => { /* the Complaints page shows its own error */ });
     return () => { alive = false; };
   }, []);
 
@@ -46,8 +63,8 @@ export default function AdminPortal() {
   };
 
   const context = {
-    accs, rsv, cmp, rep, notices, tanods: TANODS, n,
-    rsvError, reloadRsv,
+    accs, rsv, cmp, rep, notices, tanods, n,
+    rsvError, reloadRsv, cmpError, reloadCmp,
     setAcc: patch(setAccs), setCmp: patch(setCmp), setRep: patch(setRep),
     addNotice: (notice) => setNotices((l) => [notice, ...l]),
   };
