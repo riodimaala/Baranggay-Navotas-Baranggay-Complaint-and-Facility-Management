@@ -17,6 +17,7 @@ import Reserve from "./pages/resident/Reserve";
 import Complaint from "./pages/resident/Complaint";
 import ResidentNotifications from "./pages/resident/Notifications";
 import ResidentHistory from "./pages/resident/History";
+import ResidentPickups from "./pages/resident/Pickups";
 
 import AdminPortal from "./pages/admin/AdminPortal";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -56,6 +57,7 @@ export default function App() {
       <Route path="/resident" element={<RequireRole role="resident"><ResidentPortal /></RequireRole>}>
         <Route index element={<ResidentDashboard />} />
         <Route path="reserve" element={<Reserve />} />
+        <Route path="pickups" element={<ResidentPickups />} />
         <Route path="complaint" element={<Complaint />} />
         <Route path="notifications" element={<ResidentNotifications />} />
         <Route path="history" element={<ResidentHistory />} />

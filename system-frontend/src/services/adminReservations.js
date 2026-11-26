@@ -20,3 +20,8 @@ export const listReservations = async () => (await api("/admin/reservations")).m
 // 1.1.2 Approve or reject a reservation request
 export const approveReservation = (id) => api(`/admin/reservations/${id}/approve`, { method: "PATCH" });
 export const rejectReservation = (id, reason) => api(`/admin/reservations/${id}/reject`, { method: "PATCH", json: { reason } });
+
+// 1.2.1 Schedule the pick-up of an approved reservation, then update its status
+export const scheduleReservation = (id, { date, time }) =>
+  api(`/admin/reservations/${id}/schedule`, { method: "PATCH", json: { date, time } });
+export const markPickedUp = (id) => api(`/admin/reservations/${id}/pickup`, { method: "PATCH" });
